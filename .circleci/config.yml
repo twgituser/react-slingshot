@@ -1,13 +1,38 @@
 version: 2.1
 
 jobs:
-  print_hello:
+  build:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - run: echo "hello"
+      - checkout
+      - run: echo "installing packages"
+      - run: npm install
+      - save_cache:
+          key: "my-npm-packages"
+          paths:
+            - /src/node_modules
+      - run: npm run lint 
+
+  test:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo "testing"
+  
+  analyze:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo "analysing"
 
 workflows:
   workflow_name:
     jobs:
-      - print_hello
+      - build
+      - test:
+          requires:
+            - build           
+      - analyze
+          requires:
+            - test
