@@ -1,6 +1,7 @@
 version: 2.1
 
 jobs:
+
   build:
     docker:
       - image: circleci/node:13.8.0
@@ -18,13 +19,21 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - checkout
       - run: echo "testing"
+      - restore_cache:
+          keys: 
+            - "my-npm-packages"
+      - run: npm install
+      - run: npm run test
   
   analyze:
     docker:
       - image: circleci/node:13.8.0
     steps:
+      - checkout
       - run: echo "analysing"
+      - run: npm audit
 
 workflows:
   workflow_name:
